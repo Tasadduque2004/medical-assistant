@@ -1,8 +1,8 @@
 import streamlit as st
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-from prompts import SYSTEM_PROMPT, SYMPTOM_PROMPTS, EMERGENCY_KEYWORDS, EMERGENCY_RESPONSE
+from prompts import SYMPTOM_PROMPTS, EMERGENCY_KEYWORDS, EMERGENCY_RESPONSE
 
-MODEL_NAME = "google/flan-t5-small"
+MODEL_NAME = "google/flan-t5-base"
 
 
 @st.cache_resource
@@ -24,9 +24,8 @@ def check_emergency(user_text):
 
 
 def generate_response(user_prompt):
-    full_prompt = SYSTEM_PROMPT + "\n\n" + user_prompt
-    inputs = tokenizer(full_prompt, return_tensors="pt", truncation=True, max_length=512)
-    outputs = model.generate(**inputs, max_new_tokens=350)
+    inputs = tokenizer(user_prompt, return_tensors="pt", truncation=True, max_length=512)
+    outputs = model.generate(**inputs, max_new_tokens=200)
     return tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
 
 
@@ -34,8 +33,9 @@ def get_response_for_symptom(symptom_key):
     if symptom_key not in SYMPTOM_PROMPTS:
         return "Invalid selection. Please choose a valid option."
 
-    user_prompt = SYMPTOM_PROMPTS[symptom_key] + " Do not repeat these instructions back. Directly give the advice."
-    return generate_response(user_prompt)
+    user_prompt = SYMPTOM_PROMPTS[symptom_key]
+    response = generate_response(user_prompt)
+    return response + "\n\nThis is general advice only. Please consult a doctor or health worker for proper care."
 
 
 def get_response_for_freetext(user_text):

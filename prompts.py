@@ -8,13 +8,14 @@ Rules you MUST follow:
 """
 
 SYMPTOM_PROMPTS = {
-    "1": "The user has reported: Fever. Give simple home-care advice for managing a mild fever.",
-    "2": "The user has reported: Cough and cold. Give simple home-care advice for managing cough/cold symptoms.",
-    "3": "The user has reported: Stomach pain or upset stomach. Give simple home-care advice.",
-    "4": "The user has reported: Minor cuts, wounds, or burns. Give simple first-aid advice.",
-    "5": "The user has reported: Headache or body pain. Give simple home-care advice.",
-    "6": "The user has reported: General hygiene and nutrition question. Give simple practical advice on hygiene and healthy eating."
+    "1": "Give 3 simple home remedies for managing mild fever in plain English.",
+    "2": "Give 3 simple home remedies for managing cough and cold in plain English.",
+    "3": "Give 3 simple home remedies for managing stomach pain or upset stomach in plain English.",
+    "4": "Give 3 simple first-aid steps for treating a minor cut, wound, or burn in plain English.",
+    "5": "Give 3 simple home remedies for managing headache or body pain in plain English.",
+    "6": "Give 3 simple tips for good hygiene and healthy eating in plain English."
 }
+
 
 EMERGENCY_KEYWORDS = [
     "chest pain", "difficulty breathing", "unconscious", "severe bleeding",
