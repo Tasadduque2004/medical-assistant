@@ -15,7 +15,7 @@ SYMPTOM_PROMPTS = {
     "5": "List 5 home remedies and precautions for managing headache or body pain, including rest, hydration, posture, and warning signs to watch for.",
     "6": "List 5 simple daily habits for good hygiene and healthy eating in rural households."
 }
-}
+
 
 
 EMERGENCY_KEYWORDS = [
