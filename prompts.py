@@ -8,12 +8,13 @@ Rules you MUST follow:
 """
 
 SYMPTOM_PROMPTS = {
-    "1": "Give 3 simple home remedies for managing mild fever in plain English.",
-    "2": "Give 3 simple home remedies for managing cough and cold in plain English.",
-    "3": "Give 3 simple home remedies for managing stomach pain or upset stomach in plain English.",
-    "4": "Give 3 simple first-aid steps for treating a minor cut, wound, or burn in plain English.",
-    "5": "Give 3 simple home remedies for managing headache or body pain in plain English.",
-    "6": "Give 3 simple tips for good hygiene and healthy eating in plain English."
+    "1": "List 5 home remedies and precautions for managing mild fever. Include rest, fluids, food, when to use a wet cloth, and warning signs to watch for.",
+    "2": "List 5 home remedies and precautions for managing cough and cold. Include drinks, steam, food, rest tips, and warning signs to watch for.",
+    "3": "List 5 home remedies and precautions for managing stomach pain or upset stomach. Include diet changes, hydration, rest, and warning signs to watch for.",
+    "4": "List 5 first-aid steps for treating a minor cut, wound, or burn at home, including cleaning, bandaging, and signs of infection to watch for.",
+    "5": "List 5 home remedies and precautions for managing headache or body pain, including rest, hydration, posture, and warning signs to watch for.",
+    "6": "List 5 simple daily habits for good hygiene and healthy eating in rural households."
+}
 }
 
 

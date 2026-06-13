@@ -25,7 +25,14 @@ def check_emergency(user_text):
 
 def generate_response(user_prompt):
     inputs = tokenizer(user_prompt, return_tensors="pt", truncation=True, max_length=512)
-    outputs = model.generate(**inputs, max_new_tokens=200)
+    outputs = model.generate(
+        **inputs,
+        max_new_tokens=250,
+        min_length=80,
+        repetition_penalty=2.5,
+        no_repeat_ngram_size=3,
+        num_beams=4
+    )
     return tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
 
 
