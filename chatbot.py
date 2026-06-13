@@ -1,20 +1,18 @@
-from transformers import pipeline
+import streamlit as st
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from prompts import SYSTEM_PROMPT, SYMPTOM_PROMPTS, EMERGENCY_KEYWORDS, EMERGENCY_RESPONSE
 
 MODEL_NAME = "google/flan-t5-small"
 
-import streamlit as st
 
 @st.cache_resource
 def load_model():
-    return pipeline(
-        "text2text-generation",
-        model=MODEL_NAME,
-        torch_dtype="auto",
-        device_map="cpu"
-    )
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+    model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME)
+    return tokenizer, model
 
-pipe = load_model()
+
+tokenizer, model = load_model()
 
 
 def check_emergency(user_text):
@@ -27,8 +25,9 @@ def check_emergency(user_text):
 
 def generate_response(user_prompt):
     full_prompt = SYSTEM_PROMPT + "\n\n" + user_prompt
-    outputs = pipe(full_prompt, max_new_tokens=350)
-    return outputs[0]["generated_text"].strip()
+    inputs = tokenizer(full_prompt, return_tensors="pt", truncation=True, max_length=512)
+    outputs = model.generate(**inputs, max_new_tokens=350)
+    return tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
 
 
 def get_response_for_symptom(symptom_key):
@@ -36,23 +35,10 @@ def get_response_for_symptom(symptom_key):
         return "Invalid selection. Please choose a valid option."
 
     user_prompt = SYMPTOM_PROMPTS[symptom_key] + " Do not repeat these instructions back. Directly give the advice."
-    response = generate_response(user_prompt)
-
-    # Remove any leaked instruction text if model repeats it
-    if "Rules you MUST follow" in response:
-        parts = response.split("Rules you MUST follow")
-        response = parts[-1]
-        # Clean up leftover numbered rules if present
-        if "5." in response:
-            response = response.split("5.", 1)[-1]
-            if '"' in response:
-                response = response.split('"', 2)[-1]
-
-    return response.strip()
+    return generate_response(user_prompt)
 
 
 def get_response_for_freetext(user_text):
     if check_emergency(user_text):
         return EMERGENCY_RESPONSE
-
     return generate_response(f"The user says: '{user_text}'. Respond following the rules.")
