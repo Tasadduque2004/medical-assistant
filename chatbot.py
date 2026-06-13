@@ -1,16 +1,20 @@
 from transformers import pipeline
 from prompts import SYSTEM_PROMPT, SYMPTOM_PROMPTS, EMERGENCY_KEYWORDS, EMERGENCY_RESPONSE
 
-MODEL_NAME = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+MODEL_NAME = "google/flan-t5-small"
 
-print("Loading model... this happens once and may take a few minutes the first time.")
-pipe = pipeline(
-    "text-generation",
-    model=MODEL_NAME,
-    torch_dtype="auto",
-    device_map="cpu"
-)
-print("Model loaded successfully.\n")
+import streamlit as st
+
+@st.cache_resource
+def load_model():
+    return pipeline(
+        "text2text-generation",
+        model=MODEL_NAME,
+        torch_dtype="auto",
+        device_map="cpu"
+    )
+
+pipe = load_model()
 
 
 def check_emergency(user_text):
@@ -22,27 +26,9 @@ def check_emergency(user_text):
 
 
 def generate_response(user_prompt):
-    messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": user_prompt}
-    ]
-
-    prompt_text = pipe.tokenizer.apply_chat_template(
-        messages, tokenize=False, add_generation_prompt=True
-    )
-
-    outputs = pipe(
-        prompt_text,
-        max_new_tokens=300,
-        do_sample=True,
-        temperature=0.7,
-        top_p=0.9,
-        eos_token_id=pipe.tokenizer.eos_token_id
-    )
-
-    full_text = outputs[0]["generated_text"]
-    response = full_text[len(prompt_text):].strip()
-    return response
+    full_prompt = SYSTEM_PROMPT + "\n\n" + user_prompt
+    outputs = pipe(full_prompt, max_new_tokens=350)
+    return outputs[0]["generated_text"].strip()
 
 
 def get_response_for_symptom(symptom_key):
