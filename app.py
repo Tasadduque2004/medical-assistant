@@ -31,5 +31,5 @@ if st.button("Get Advice"):
         translated = translate_text(response_text, lang_code)
 
     st.success("Here's the advice:")
-    st.write(translated)
+    st.markdown(translated)
     st.warning("This is general advice only. Please consult a doctor or health worker for proper care.")

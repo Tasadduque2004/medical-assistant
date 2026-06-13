@@ -1,6 +1,6 @@
 import streamlit as st
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-from prompts import SYMPTOM_PROMPTS, EMERGENCY_KEYWORDS, EMERGENCY_RESPONSE
+from prompts import SYMPTOM_RESPONSES, EMERGENCY_KEYWORDS, EMERGENCY_RESPONSE
 
 MODEL_NAME = "google/flan-t5-base"
 
@@ -23,29 +23,27 @@ def check_emergency(user_text):
     return False
 
 
-def generate_response(user_prompt):
-    inputs = tokenizer(user_prompt, return_tensors="pt", truncation=True, max_length=512)
-    outputs = model.generate(
-        **inputs,
-        max_new_tokens=250,
-        min_length=80,
-        repetition_penalty=2.5,
-        no_repeat_ngram_size=3,
-        num_beams=4
-    )
-    return tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
-
-
 def get_response_for_symptom(symptom_key):
-    if symptom_key not in SYMPTOM_PROMPTS:
+    if symptom_key not in SYMPTOM_RESPONSES:
         return "Invalid selection. Please choose a valid option."
 
-    user_prompt = SYMPTOM_PROMPTS[symptom_key]
-    response = generate_response(user_prompt)
-    return response + "\n\nThis is general advice only. Please consult a doctor or health worker for proper care."
+    response = SYMPTOM_RESPONSES[symptom_key]
+    return response + "\n\n*This is general advice only. Please consult a doctor or health worker for proper care.*"
 
 
 def get_response_for_freetext(user_text):
     if check_emergency(user_text):
         return EMERGENCY_RESPONSE
-    return generate_response(f"The user says: '{user_text}'. Respond following the rules.")
+
+    prompt = f"Answer this health question in simple words: {user_text}"
+    inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
+    outputs = model.generate(
+        **inputs,
+        max_new_tokens=150,
+        min_length=20,
+        repetition_penalty=2.5,
+        no_repeat_ngram_size=3,
+        num_beams=4
+    )
+    response = tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
+    return response + "\n\n*This is general advice only. Please consult a doctor or health worker for proper care.*"
